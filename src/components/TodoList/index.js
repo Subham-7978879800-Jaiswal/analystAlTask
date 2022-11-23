@@ -5,11 +5,13 @@ import { TodoListCard } from "./TodoListCard";
 export const Todo = () => {
   const [input, setInput] = useState("");
 
-  const { todoList, addTodo, deleteTodo, completeTodo } = useTodos();
+  const { todoList, addTodo, deleteTodo, completeTodo, pendingTodo } =
+    useTodos();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     addTodo(input);
+    setInput("");
   };
 
   const renderAllTodoList = (
@@ -30,7 +32,9 @@ export const Todo = () => {
             note={value.note}
             deleteTodo={() => deleteTodo(key)}
             completeTodo={() => completeTodo(key)}
+            pendingTodo={() => pendingTodo(key)}
             variant={"primary"}
+            allTask={true}
           ></TodoListCard>
         );
       }
@@ -45,8 +49,8 @@ export const Todo = () => {
               createdAt={value.createdAt}
               note={value.note}
               deleteTodo={() => deleteTodo(key)}
-              completeTodo={() => completeTodo(key)}
               variant={"danger"}
+              allTask={false}
             ></TodoListCard>
           );
         }
@@ -62,8 +66,8 @@ export const Todo = () => {
               createdAt={value.createdAt}
               note={value.note}
               deleteTodo={() => deleteTodo(key)}
-              completeTodo={() => completeTodo(key)}
               variant={"success"}
+              allTask={false}
             ></TodoListCard>
           );
         }
@@ -72,21 +76,27 @@ export const Todo = () => {
     return todo;
   };
 
-  const allTodo = useMemo(() => renderAllTodoList(true), [todoList]);
-  const pendingTodo = useMemo(() => renderAllTodoList(false, true), [todoList]);
-  const completedTodo = useMemo(
+  const allTodoList = useMemo(() => renderAllTodoList(true), [todoList]);
+  const pendingTodoList = useMemo(
+    () => renderAllTodoList(false, true),
+    [todoList]
+  );
+  const completedTodoList = useMemo(
     () => renderAllTodoList(false, false, true),
     [todoList]
   );
 
   return (
     <>
-      <div>All Tasks</div>
-      <div>{allTodo}</div>
-      <div>Pending Tasks</div>
-      <div>{pendingTodo}</div>
-      <div>Completed Tasks</div>
-      <div>{completedTodo}</div>
+      <h1>All Tasks</h1>
+      <div>{allTodoList}</div>
+      <hr></hr>
+      <h1>Pending Tasks</h1>
+      <div>{pendingTodoList}</div>
+      <hr></hr>
+      <h1>Completed Tasks</h1>
+      <div>{completedTodoList}</div>
+      <hr></hr>
       <div className="todolistInputContainer">
         <form onSubmit={handleSubmit}>
           <input

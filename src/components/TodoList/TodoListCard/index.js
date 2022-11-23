@@ -6,7 +6,9 @@ export const TodoListCard = ({
   id,
   deleteTodo,
   completeTodo,
+  pendingTodo,
   variant,
+  allTask,
 }) => {
   return (
     <Alert
@@ -18,13 +20,22 @@ export const TodoListCard = ({
     >
       Task is {note}
       <p>Created at {createdAt.toLocaleString()}</p>
-      {!completed && (
+      {allTask && (
         <>
+          {!completed && (
+            <>
+              <button onClick={completeTodo}>Make it complete</button>
+            </>
+          )}
+          {completed && (
+            <>
+              <p>Completed 😊</p>
+              <button onClick={pendingTodo}>Make it Pending</button>
+            </>
+          )}
           <button onClick={deleteTodo}>Delete</button>
-          <button onClick={completeTodo}>Completed</button>
         </>
       )}
-      {completed && <p>Completed 😊</p>}
     </Alert>
   );
 };

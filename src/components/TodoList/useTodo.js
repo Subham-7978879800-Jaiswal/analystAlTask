@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const useTodos = () => {
-  const [todoList, setTodoList] = useState(new Map());
+  const InitialTodos = new Map();
+
+  const [todoList, setTodoList] = useState(InitialTodos);
 
   const addTodo = (input) => {
     setTodoList((previous) => {
@@ -34,5 +36,15 @@ export const useTodos = () => {
     });
   };
 
-  return { todoList, addTodo, deleteTodo, completeTodo };
+  const pendingTodo = (id) => {
+    setTodoList((previous) => {
+      const newMap = new Map(previous);
+      const newTodo = newMap.get(id);
+      newTodo.completed = false;
+      newMap.set(id, newTodo);
+      return newMap;
+    });
+  };
+
+  return { todoList, addTodo, deleteTodo, completeTodo, pendingTodo };
 };
