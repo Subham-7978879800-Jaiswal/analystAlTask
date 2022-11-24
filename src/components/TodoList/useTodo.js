@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { TodoListCard } from "./TodoListCard";
 
 export const useTodos = () => {
   const InitialTodos = new Map();
@@ -46,5 +47,57 @@ export const useTodos = () => {
     });
   };
 
-  return { todoList, addTodo, deleteTodo, completeTodo, pendingTodo };
+  const renderAllTodoListfn = (
+    variant = "primary",
+    allTask = true,
+    pending = false,
+    completed = false
+  ) => {
+    const todo = [];
+
+    for (let [key, value] of todoList.entries()) {
+      if (pending && value.completed === true) {
+        continue;
+      }
+      if (completed && value.completed === false) {
+        continue;
+      }
+
+      todo.push(
+        <TodoListCard
+          id={key}
+          key={key}
+          completed={value.completed}
+          createdAt={value.createdAt}
+          note={value.note}
+          deleteTodo={() => deleteTodo(key)}
+          completeTodo={() => completeTodo(key)}
+          pendingTodo={() => pendingTodo(key)}
+          variant={variant}
+          allTask={allTask}
+        ></TodoListCard>
+      );
+    }
+
+    return todo;
+  };
+
+  const pendingTodoListfn = () => {
+    return renderAllTodoListfn("danger", false, true, false);
+  };
+
+  const completedTodoListfn = () => {
+    return renderAllTodoListfn("success", false, false, true);
+  };
+
+  return {
+    todoList,
+    addTodo,
+    deleteTodo,
+    completeTodo,
+    pendingTodo,
+    renderAllTodoListfn,
+    pendingTodoListfn,
+    completedTodoListfn,
+  };
 };

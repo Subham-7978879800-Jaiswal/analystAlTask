@@ -1,12 +1,18 @@
+import React from "react";
 import { useTodos } from "./useTodo";
 import { useState, useMemo } from "react";
 import "./TodoList.css";
-import { TodoListCard } from "./TodoListCard";
-export const Todo = () => {
+
+export const Todo = React.memo(() => {
   const [input, setInput] = useState("");
 
-  const { todoList, addTodo, deleteTodo, completeTodo, pendingTodo } =
-    useTodos();
+  const {
+    todoList,
+    addTodo,
+    renderAllTodoListfn,
+    pendingTodoListfn,
+    completedTodoListfn,
+  } = useTodos();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -14,77 +20,9 @@ export const Todo = () => {
     setInput("");
   };
 
-  const renderAllTodoList = (
-    all = false,
-    pending = false,
-    completed = false
-  ) => {
-    const todo = [];
-
-    if (all) {
-      for (let [key, value] of todoList.entries()) {
-        todo.push(
-          <TodoListCard
-            id={key}
-            key={key}
-            completed={value.completed}
-            createdAt={value.createdAt}
-            note={value.note}
-            deleteTodo={() => deleteTodo(key)}
-            completeTodo={() => completeTodo(key)}
-            pendingTodo={() => pendingTodo(key)}
-            variant={"primary"}
-            allTask={true}
-          ></TodoListCard>
-        );
-      }
-    } else if (pending) {
-      for (let [key, value] of todoList.entries()) {
-        if (!value.completed) {
-          todo.push(
-            <TodoListCard
-              id={key}
-              key={key}
-              completed={value.completed}
-              createdAt={value.createdAt}
-              note={value.note}
-              deleteTodo={() => deleteTodo(key)}
-              variant={"danger"}
-              allTask={false}
-            ></TodoListCard>
-          );
-        }
-      }
-    } else if (completed) {
-      for (let [key, value] of todoList.entries()) {
-        if (value.completed) {
-          todo.push(
-            <TodoListCard
-              id={key}
-              key={key}
-              completed={value.completed}
-              createdAt={value.createdAt}
-              note={value.note}
-              deleteTodo={() => deleteTodo(key)}
-              variant={"success"}
-              allTask={false}
-            ></TodoListCard>
-          );
-        }
-      }
-    }
-    return todo;
-  };
-
-  const allTodoList = useMemo(() => renderAllTodoList(true), [todoList]);
-  const pendingTodoList = useMemo(
-    () => renderAllTodoList(false, true),
-    [todoList]
-  );
-  const completedTodoList = useMemo(
-    () => renderAllTodoList(false, false, true),
-    [todoList]
-  );
+  const allTodoList = useMemo(() => renderAllTodoListfn(), [todoList]);
+  const pendingTodoList = useMemo(() => pendingTodoListfn(), [todoList]);
+  const completedTodoList = useMemo(() => completedTodoListfn(), [todoList]);
 
   return (
     <>
@@ -108,4 +46,4 @@ export const Todo = () => {
       </div>
     </>
   );
-};
+});
